@@ -10,7 +10,6 @@ import discord
 import os
 from discord.utils import get
 from discord import FFmpegPCMAudio
-from os import system
 
 bot = commands.Bot(command_prefix='`')
 
@@ -86,7 +85,7 @@ async def play(ctx, url: str):
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
             os.rename(file, 'song.mp3')
-    voice.play(discord.FFmpegPCMAudio("hi.mp3"))
+    voice.play(discord.FFmpegPCMAudio("song.mp3"))
     voice.volume = 100
     voice.is_playing()
 
