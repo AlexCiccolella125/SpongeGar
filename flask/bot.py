@@ -40,7 +40,8 @@ async def on_message(ctx):
     response = random.choice(brooklyn_99_quotes)
     await ctx.send(response)
 
-
+    
+'''
 @bot.command(pass_context=True, brief="Makes the bot join your channel", aliases=['j', 'jo'])
 async def join(ctx):
     channel = ctx.message.author.voice.channel
@@ -58,8 +59,42 @@ async def join(ctx):
     else:
         voice = await channel.connect()
     await ctx.send(f"Joined {channel}")
+'''
 
 
+@bot.command(pass_context=True, brief="Makes the bot join your channel", aliases=['j', 'jo'])
+async def join(ctx, name: str):
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    if not name:
+        channel = ctx.message.author.voice.channel
+        if not channel:
+            await ctx.send("You are not connected to a voice channel")
+            return
+        if voice and voice.is_connected():
+            await voice.move_to(channel)
+        else:
+            voice = await channel.connect()
+        await voice.disconnect()
+        await ctx.send(f"Joined {channel}")
+    else:
+        channels = ctx.message.author.guild.voice_channels
+        for voiceChannel in channels:
+                if voiceChannel.name == name:
+                    channel = voiceChannel
+                    break
+        else:
+            await ctx.send(f"channel {name} not found")
+        try:
+            if voice and voice.is_connected():
+                await voice.move_to(channel)
+            else:
+                voice = await channel.connect()
+            await voice.disconnect()
+            await ctx.send(f"Joined {channel}")
+        except:
+            print("cannot enter channel")
+
+    
 @bot.command(pass_context=True, brief="This will play a song 'play [url]'", aliases=['pl'])
 async def play(ctx, url: str):
     song_there = os.path.isfile("song.mp3")
@@ -77,7 +112,7 @@ async def play(ctx, url: str):
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '192',
+            'preferredquality': '128',
         }],
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -92,6 +127,7 @@ async def play(ctx, url: str):
 
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])
 async def leave(ctx):
+
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
