@@ -63,7 +63,13 @@ class Music:
         voice.play(discord.FFmpegPCMAudio("song.mp3"))
         voice.volume = 100
         voice.is_playing()
+
+    """
+    Leaves a voice chat if the bot is in one in the specified guild
     
+    :param guild: The server for which you would like the bot to leave the voice chat in
+    :param channel: The channel for which you want the feedback messages to be sent
+    """
     async def leave(self, guild, channel=None):
         voice = get(self.bot.voice_clients, guild=guild)
         if channel is None:
