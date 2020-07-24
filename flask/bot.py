@@ -1,14 +1,8 @@
 # bot.py
-import os
-
 from discord.ext import commands
 from dotenv import load_dotenv
 import random
-import youtube_dl
-
-import discord
 import os
-from discord.utils import get
 from music import Music
 
 load_dotenv()
@@ -18,7 +12,6 @@ COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 music = Music(bot)
-
 
 
 @bot.event
@@ -43,7 +36,6 @@ async def on_message(ctx):
     response = random.choice(brooklyn_99_quotes)
     await ctx.send(response)
 
-    
 
 @bot.command(pass_context=True, brief="Makes the bot join your channel", aliases=['j', 'jo'])
 async def join(ctx):
@@ -82,5 +74,4 @@ async def on_error(event, *args, **kwargs):
             raise
 
 if __name__ == '__main__':
-    print(TOKEN)
     bot.run(TOKEN)
