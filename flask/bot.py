@@ -70,14 +70,7 @@ async def play(ctx, url: str):
 
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])
 async def leave(ctx):
-
-    channel = ctx.message.author.voice.channel
-    voice = get(bot.voice_clients, guild=ctx.guild)
-    if voice and voice.is_connected():
-        await voice.disconnect()
-        await ctx.send(f"Left {channel}")
-    else:
-        await ctx.send("Don't think I am in a voice channel")
+    await music.leave(ctx.message.guild, ctx.message.channel)
 
 
 @bot.event

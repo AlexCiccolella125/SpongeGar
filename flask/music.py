@@ -9,6 +9,11 @@ class Music:
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
+    def get_default_text_channel(guild) -> discord.TextChannel:
+        channel = get(guild.channels, name='bots')
+        return channel
+
     """
     This method is for having the bot join a specific channel. If a channel is specified, it will send a confirmation
     message on join
@@ -29,7 +34,7 @@ class Music:
         else:
             voice = await voice_channel.connect()
         if channel is None:
-            channel = get(guild.channels, name='bots')
+            channel = self.get_default_text_channel(guild)
         await channel.send(f"Joined {voice_channel}")
 
     """
@@ -58,4 +63,13 @@ class Music:
         voice.play(discord.FFmpegPCMAudio("song.mp3"))
         voice.volume = 100
         voice.is_playing()
-
+    
+    async def leave(self, guild, channel=None):
+        voice = get(self.bot.voice_clients, guild=guild)
+        if channel is None:
+            channel = self.get_default_text_channel(guild)
+        if voice and voice.is_connected():
+            await voice.disconnect()
+            await channel.send(f"Left {voice.channel}")
+        else:
+            await channel.send("Don't think I am in a voice channel")
