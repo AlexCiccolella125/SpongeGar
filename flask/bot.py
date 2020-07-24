@@ -48,16 +48,8 @@ async def join(ctx):
     
 @bot.command(pass_context=True, brief="This will play a song 'play [url]'", aliases=['pl'])
 async def play(ctx, url: str):
-    song_there = os.path.isfile("song.mp3")
-    try:
-        if song_there:
-            os.remove("song.mp3")
-    except PermissionError:
-        await ctx.send("Wait for the current playing music end or use the 'stop' command")
-        return
-    await ctx.send("Getting everything ready, playing audio soon")
     guild = ctx.message.guild
-    await music.play(guild, url)
+    await music.play(guild, url, ctx.message.channel)
 
 
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])

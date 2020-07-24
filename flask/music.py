@@ -28,11 +28,6 @@ class Music:
             await voice.move_to(voice_channel)
         else:
             voice = await voice_channel.connect()
-        await voice.disconnect()
-        if voice and voice.is_connected():
-            await voice.move_to(channel)
-        else:
-            voice = await voice_channel.connect()
         if channel is None:
             channel = self.get_default_text_channel(guild)
         await channel.send(f"Joined {voice_channel}")
@@ -44,8 +39,21 @@ class Music:
     :param guild: The server that you want the audio to start playing in
     :param youtube_url: The youtube url that you would like to start playing
     """
-    async def play(self, guild, youtube_url):
+    async def play(self, guild, youtube_url, channel=None):
         print("Someone wants to play music let me get that ready for them...")
+
+        if channel is None:
+            channel = self.get_default_text_channel(guild)
+
+        song_there = os.path.isfile("song.mp3")
+        try:
+            if song_there:
+                os.remove("song.mp3")
+        except PermissionError:
+            await channel.send("Wait for the current playing music end or use the 'stop' command")
+            return
+        await channel.send("Getting everything ready, playing audio soon")
+
         voice = guild.voice_client
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -55,6 +63,7 @@ class Music:
                 'preferredquality': '128',
             }],
         }
+
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([youtube_url])
         for file in os.listdir("./"):
