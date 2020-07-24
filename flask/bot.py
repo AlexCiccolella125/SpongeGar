@@ -9,9 +9,7 @@ import youtube_dl
 import discord
 import os
 from discord.utils import get
-from discord import FFmpegPCMAudio
 from music import Music
-from discord import TextChannel
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -66,24 +64,8 @@ async def play(ctx, url: str):
         await ctx.send("Wait for the current playing music end or use the 'stop' command")
         return
     await ctx.send("Getting everything ready, playing audio soon")
-    print("Someone wants to play music let me get that ready for them...")
-    voice = ctx.message.guild.voice_client
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '128',
-        }],
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            os.rename(file, 'song.mp3')
-    voice.play(discord.FFmpegPCMAudio("song.mp3"))
-    voice.volume = 100
-    voice.is_playing()
+    guild = ctx.message.guild
+    await music.play(guild, url)
 
 
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])
