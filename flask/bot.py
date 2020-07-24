@@ -10,12 +10,17 @@ import discord
 import os
 from discord.utils import get
 from discord import FFmpegPCMAudio
-
-bot = commands.Bot(command_prefix='`')
+from music import Music
+from discord import TextChannel
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
+COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
+
+bot = commands.Bot(command_prefix=COMMAND_PREFIX)
+music = Music(bot)
+
 
 
 @bot.event
@@ -41,58 +46,14 @@ async def on_message(ctx):
     await ctx.send(response)
 
     
-'''
+
 @bot.command(pass_context=True, brief="Makes the bot join your channel", aliases=['j', 'jo'])
 async def join(ctx):
     channel = ctx.message.author.voice.channel
     if not channel:
         await ctx.send("You are not connected to a voice channel")
         return
-    voice = get(bot.voice_clients, guild=ctx.guild)
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
-    await voice.disconnect()
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
-    await ctx.send(f"Joined {channel}")
-'''
-
-
-@bot.command(pass_context=True, brief="Makes the bot join your channel", aliases=['j', 'jo'])
-async def join(ctx, name: str):
-    voice = get(bot.voice_clients, guild=ctx.guild)
-    if not name:
-        channel = ctx.message.author.voice.channel
-        if not channel:
-            await ctx.send("You are not connected to a voice channel")
-            return
-        if voice and voice.is_connected():
-            await voice.move_to(channel)
-        else:
-            voice = await channel.connect()
-        await voice.disconnect()
-        await ctx.send(f"Joined {channel}")
-    else:
-        channels = ctx.message.author.guild.voice_channels
-        for voiceChannel in channels:
-                if voiceChannel.name == name:
-                    channel = voiceChannel
-                    break
-        else:
-            await ctx.send(f"channel {name} not found")
-        try:
-            if voice and voice.is_connected():
-                await voice.move_to(channel)
-            else:
-                voice = await channel.connect()
-            await voice.disconnect()
-            await ctx.send(f"Joined {channel}")
-        except:
-            print("cannot enter channel")
+    await music.join_channel(ctx.guild, channel, ctx.message.channel)
 
     
 @bot.command(pass_context=True, brief="This will play a song 'play [url]'", aliases=['pl'])
@@ -145,6 +106,6 @@ async def on_error(event, *args, **kwargs):
         else:
             raise
 
-
 if __name__ == '__main__':
+    print(TOKEN)
     bot.run(TOKEN)
