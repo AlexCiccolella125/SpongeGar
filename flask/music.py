@@ -73,6 +73,16 @@ class Music:
         voice.volume = 100
         voice.is_playing()
 
+
+    """
+    Pauses the audio that is playing in a guild
+    :param guild: guild to pause audio for
+    """
+    async def pause(self, guild):
+        print("Pausing Audio")
+        voice = guild.voice_client
+        voice.pause()
+
     """
     Leaves a voice chat if the bot is in one in the specified guild
     
