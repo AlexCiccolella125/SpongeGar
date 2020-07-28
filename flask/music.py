@@ -99,6 +99,11 @@ class Music:
         voice = guild.voice_client
         voice.pause()
 
+    async def resume(self, guild):
+        print("Resuming Audio")
+        voice = guild.voice_client
+        voice.resume()
+
     """
     Leaves a voice chat if the bot is in one in the specified guild
     

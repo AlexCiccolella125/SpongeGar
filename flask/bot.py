@@ -58,6 +58,12 @@ async def pause(ctx):
     await music.pause(guild)
 
 
+@bot.command(pass_context=True, brief="This will pause the music", aliases=['res'])
+async def resume(ctx):
+    guild = ctx.message.guild
+    await music.resume(guild)
+
+
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])
 async def leave(ctx):
     await music.leave(ctx.message.guild, ctx.message.channel)
