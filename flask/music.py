@@ -1,13 +1,51 @@
 from discord.utils import get
 import os
-from discord import FFmpegPCMAudio
 import discord
 import youtube_dl
+from song_cache import Song, SongCache
 
 
 class Music:
     def __init__(self, bot):
         self.bot = bot
+        self.song_cache: SongCache = SongCache()
+
+    """
+    Plays the specified file in the guild's voice client
+    
+    :param guild: guild to play music in
+    :param file: file to play
+    """
+    @staticmethod
+    def play_file(guild, file):
+        voice = guild.voice_client
+        voice.play(discord.FFmpegPCMAudio(file))
+        voice.volume = 100
+        voice.is_playing()
+
+    """
+    Downloads a song based on a url from youtube. It will also cache the downloaded file.
+    
+    :param youtube_url: URL to youtube video
+    """
+    def download_song(self, youtube_url) -> Song:
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '128',
+            }],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([youtube_url])
+            for file in os.listdir("./"):
+                if file.endswith(".mp3"):
+                    file_location = f'./music_cache/{file}'
+                    os.rename(file, file_location)
+                    song = Song(youtube_url, file_location)
+                    self.song_cache.append(song)
+                    return song
 
     @staticmethod
     def get_default_text_channel(guild) -> discord.TextChannel:
@@ -44,38 +82,16 @@ class Music:
 
         if channel is None:
             channel = self.get_default_text_channel(guild)
-
-        song_there = os.path.isfile("song.mp3")
-        try:
-            if song_there:
-                os.remove("song.mp3")
-        except PermissionError:
-            await channel.send("Wait for the current playing music end or use the 'stop' command")
-            return
-        await channel.send("Getting everything ready, playing audio soon")
-
-        voice = guild.voice_client
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '128',
-            }],
-        }
-
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([youtube_url])
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.rename(file, 'song.mp3')
-        voice.play(discord.FFmpegPCMAudio("song.mp3"))
-        voice.volume = 100
-        voice.is_playing()
+        song = self.song_cache.get_song(youtube_url)
+        if song is None:
+            await channel.send("Getting everything ready, playing audio soon")
+            song = self.download_song(youtube_url)
+        self.play_file(guild, song.file_name)
 
 
     """
     Pauses the audio that is playing in a guild
+    
     :param guild: guild to pause audio for
     """
     async def pause(self, guild):
