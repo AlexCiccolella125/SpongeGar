@@ -21,7 +21,7 @@ class SongCache:
     def clear_cache():
         for file in os.listdir("./music_cache"):
             if file.endswith(".mp3"):
-                os.remove(file)
+                os.remove(f'./music_cache/{file}')
 
     """
     Attempts the removal of a song and fails if it is playing. Returns true if the method was successful and False 
