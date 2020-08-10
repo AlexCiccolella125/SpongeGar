@@ -88,7 +88,6 @@ class Music:
             song = self.download_song(youtube_url)
         self.play_file(guild, song.file_name)
 
-
     """
     Pauses the audio that is playing in a guild
     
@@ -99,10 +98,25 @@ class Music:
         voice = guild.voice_client
         voice.pause()
 
+    """
+    Resumes whatever was playing at the time the audio was paused
+    
+    :param guild: guild to resume audio for
+    """
     async def resume(self, guild):
         print("Resuming Audio")
         voice = guild.voice_client
         voice.resume()
+
+    """
+    Stops song/audio file and removes it
+    
+    :param guild: guild to stop audio for
+    """
+    async def stop(self, guild):
+        print("Stopping Audio")
+        voice = guild.voice_client
+        voice.stop()
 
     """
     Leaves a voice chat if the bot is in one in the specified guild
