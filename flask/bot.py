@@ -64,7 +64,7 @@ async def resume(ctx):
     await music.resume(guild)
 
 
-@bot.command(pass_context=True, brief="This will pause the music", aliases=['st'])
+@bot.command(pass_context=True, brief="This will stop the music", aliases=['st'])
 async def stop(ctx):
     guild = ctx.message.guild
     await music.stop(guild)
