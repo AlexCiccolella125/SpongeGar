@@ -20,6 +20,8 @@ async def on_ready():
     print(
         f'{bot.user.name} is connected to the following guild:\n'
     )
+    for guild in bot.guilds:
+        music.player_queue[guild.name] = Music.Player(guild)
 
 
 @bot.command(name='99')
@@ -73,6 +75,18 @@ async def stop(ctx):
 @bot.command(pass_context=True, brief="Makes the bot leave your channel", aliases=['l', 'le', 'lea'])
 async def leave(ctx):
     await music.leave(ctx.message.guild, ctx.message.channel)
+
+
+@bot.command(pass_context=True, brief="This will queue a song to play after this song is done")
+async def queue(ctx, url: str):
+    guild = ctx.message.guild
+    await music.queue(guild, url)
+
+
+@bot.command(pass_context=True, brief="This will skip to the next song in the queue")
+async def skip(ctx):
+    guild = ctx.message.guild
+    await music.skip(guild)
 
 
 @bot.event
